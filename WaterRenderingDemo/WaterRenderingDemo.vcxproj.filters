@@ -14,10 +14,6 @@
     <Filter Include="Helpers">
       <UniqueIdentifier>8a07a39d-8385-4d38-b168-967c100ba093</UniqueIdentifier>
     </Filter>
-
-    <Page Include="Common\StandardStyles.xaml">
-      <Filter>Common</Filter>
-    </Page>
     <ClInclude Include="Helpers\DirectXHelper.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -27,11 +23,9 @@
     <ClInclude Include="Helpers\DeviceResources.h">
       <Filter>Common</Filter>
     </ClInclude>
-
     <ClCompile Include="Helpers\DeviceResources.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-
     <ClInclude Include="Helpers\InputManager.h">
       <Filter>Helpers</Filter>
     </ClInclude>
@@ -41,19 +35,6 @@
     <ClInclude Include="Helpers\SoundPlayer.h">
       <Filter>Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="Helpers\RandomAccessReader.h">
-      <Filter>Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="Helpers\SoundFile.h">
-      <Filter>Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="Helpers\SoundFileReader.h">
-      <Filter>Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="Helpers\StreamEffect.h">
-      <Filter>Helpers</Filter>
-    </ClInclude>
-
     <ClCompile Include="Helpers\InputManager.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
@@ -63,19 +44,6 @@
     <ClCompile Include="Helpers\SoundPlayer.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="Helpers\RandomAccessReader.cpp">
-      <Filter>Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="Helpers\SoundFile.cpp">
-      <Filter>Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="Helpers\SoundFileReader.cpp">
-      <Filter>Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="Helpers\StreamEffect.cpp">
-      <Filter>Helpers</Filter>
-    </ClCompile>
-
     <ClInclude Include="Content\Sample3DSceneRenderer.h">
       <Filter>Content</Filter>
     </ClInclude>
@@ -103,7 +71,6 @@
     <FxCompile Include="Content\SampleVertexShader.hlsl">
       <Filter>Content</Filter>
     </FxCompile>
-
     <Media Include="Assets\chord.wav">
       <Filter>Assets</Filter>
     </Media>
@@ -122,5 +89,40 @@
     <Image Include="Assets\SplashScreen.png">
       <Filter>Assets</Filter>
     </Image>
+    <Filter Include="Content\Shaders">
+      <UniqueIdentifier>{9295086e-73e1-46d4-b35a-7ea1ed3cc0bc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="WaterRenderingDemoMain.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Content\WRDSceneRenderer.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneObject.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="App.h" />
+    <ClInclude Include="WaterRenderingDemoMain.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Content\WRDSceneRenderer.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneObject.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="WaterRenderingDemo_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="WaterVertexShader.hlsl">
+      <Filter>Content\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="WaterPixelShader.hlsl">
+      <Filter>Content\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
