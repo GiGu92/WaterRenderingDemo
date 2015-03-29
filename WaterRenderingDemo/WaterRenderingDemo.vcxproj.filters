@@ -116,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="WaterRenderingDemo_TemporaryKey.pfx" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="WaterVertexShader.hlsl">
@@ -124,5 +125,13 @@
     <FxCompile Include="WaterPixelShader.hlsl">
       <Filter>Content\Shaders</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <MeshContentTask Include="Assets\plane.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Assets\L200-FBX\L200-FBX.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
   </ItemGroup>
 </Project>

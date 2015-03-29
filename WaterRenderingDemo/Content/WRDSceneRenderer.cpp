@@ -16,6 +16,7 @@ WRDSceneRenderer::WRDSceneRenderer(const std::shared_ptr<DX::DeviceResources>& d
 	m_deviceResources(deviceResources)
 {
 	this->water = std::shared_ptr<SceneObject>(new SceneObject());
+	//this->water = std::shared_ptr<SceneObject>(new SceneObject(m_deviceResources, L"L200-FBX.cmo"));
 	this->bottom = std::shared_ptr<SceneObject>(new SceneObject());
 	this->water->indexCount = 0;
 	this->bottom->indexCount = 0;
@@ -67,7 +68,7 @@ void WRDSceneRenderer::CreateWindowSizeDependentResources()
 		);
 
 	// Eye is at (0,0.7,1.5), looking at point (0,-0.1,0) with the up-vector along the y-axis.
-	static const XMVECTORF32 eye = { 0.0f, 0.7f, 1.5f, 0.0f };
+	static const XMVECTORF32 eye = { 0.0f, 0.7f, 10.5f, 0.0f };
 	static const XMVECTORF32 at = { 0.0f, -0.1f, 0.0f, 0.0f };
 	static const XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };
 
@@ -90,7 +91,7 @@ void WRDSceneRenderer::Update(DX::StepTimer const& timer)
 	}
 
 	XMMATRIX modelMatrix = XMMatrixTranslation(1, 0, 0);
-	XMStoreFloat4x4(&water->constantBufferData.model, XMMatrixTranspose(modelMatrix));
+	//XMStoreFloat4x4(&water->constantBufferData.model, XMMatrixTranspose(modelMatrix));
 }
 
 // Rotate the 3D cube model a set amount of radians.
@@ -155,7 +156,9 @@ void WRDSceneRenderer::Render()
 		);
 
 	water->Draw(context);
-	bottom->Draw(context);
+	//bottom->Draw(context);
+
+	//water->Draw(m_deviceResources);
 }
 
 void WRDSceneRenderer::CreateDeviceDependentResources()

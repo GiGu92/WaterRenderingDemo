@@ -3,6 +3,10 @@
 #include "Helpers\DeviceResources.h"
 #include "Content\ShaderStructures.h"
 
+#include <Model.h>
+#include <Effects.h>
+#include <CommonStates.h>
+
 using namespace WaterRenderingDemo;
 
 class SceneObject
@@ -11,6 +15,7 @@ class SceneObject
 
 public:
 	SceneObject();
+	SceneObject(std::shared_ptr<DX::DeviceResources> deviceResources, const wchar_t* modelFile);
 	SceneObject(
 		Microsoft::WRL::ComPtr<ID3D11InputLayout>    inputLayout,
 		Microsoft::WRL::ComPtr<ID3D11Buffer>         vertexBuffer,
@@ -21,6 +26,7 @@ public:
 		ModelViewProjectionConstantBuffer            constantBufferData,
 		uint32 indexCount);
 	
+	void Draw(std::shared_ptr<DX::DeviceResources> deviceResources);
 	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext2> context);
 
 	void LoadVS(
@@ -44,5 +50,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11Buffer>         constantBuffer;
 	ModelViewProjectionConstantBuffer            constantBufferData;
 	uint32 indexCount;
+
+	std::unique_ptr<DirectX::Model> model;
 };
 

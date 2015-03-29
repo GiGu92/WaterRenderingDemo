@@ -11,6 +11,13 @@ using namespace Windows::Foundation;
 
 SceneObject::SceneObject() { }
 
+SceneObject::SceneObject(std::shared_ptr<DX::DeviceResources> deviceResources, const wchar_t* modelFile)
+{
+	auto device = deviceResources->GetD3DDevice();
+	EffectFactory fx(device);
+	this->model = Model::CreateFromCMO(device, modelFile, fx);
+}
+
 SceneObject::SceneObject(
 	Microsoft::WRL::ComPtr<ID3D11InputLayout>    inputLayout,
 	Microsoft::WRL::ComPtr<ID3D11Buffer>         vertexBuffer,
@@ -34,6 +41,22 @@ SceneObject::~SceneObject()
 	constantBuffer.Reset();
 	vertexBuffer.Reset();
 	indexBuffer.Reset();
+}
+
+void SceneObject::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
+{
+	auto device = deviceResources->GetD3DDevice();
+	auto context = deviceResources->GetD3DDeviceContext();
+	CommonStates states(device);
+
+	XMMATRIX local;
+	XMMATRIX view;
+	XMMATRIX proj;
+	XMStoreFloat4x4(&constantBufferData.model, local);
+	XMStoreFloat4x4(&constantBufferData.view, view);
+	XMStoreFloat4x4(&constantBufferData.projection, proj);
+
+	model->Draw(context, states, local, view, proj, true);
 }
 
 void SceneObject::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext2> context)
