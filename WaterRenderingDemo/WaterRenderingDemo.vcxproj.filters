@@ -101,6 +101,7 @@
       <Filter>Content</Filter>
     </ClCompile>
     <ClCompile Include="SceneObject.cpp" />
+    <ClCompile Include="Camera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
@@ -110,6 +111,7 @@
       <Filter>Content</Filter>
     </ClInclude>
     <ClInclude Include="SceneObject.h" />
+    <ClInclude Include="Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />

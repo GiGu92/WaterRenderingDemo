@@ -20,44 +20,44 @@
 // Renders Direct2D and 3D content on the screen.
 namespace WaterRenderingDemo
 {
-    class WaterRenderingDemoMain : public DX::IDeviceNotify
-    {
-    public:
-        WaterRenderingDemoMain(const std::shared_ptr<DX::DeviceResources>& deviceResources);
-        ~WaterRenderingDemoMain();
-        void CreateWindowSizeDependentResources();
-        void Update();
-        bool Render();
+	class WaterRenderingDemoMain : public DX::IDeviceNotify
+	{
+	public:
+		WaterRenderingDemoMain(const std::shared_ptr<DX::DeviceResources>& deviceResources);
+		~WaterRenderingDemoMain();
+		void CreateWindowSizeDependentResources();
+		void Update();
+		bool Render();
 
-        // IDeviceNotify
-        virtual void OnDeviceLost();
-        virtual void OnDeviceRestored();
+		// IDeviceNotify
+		virtual void OnDeviceLost();
+		virtual void OnDeviceRestored();
 
-    private:
-        void InitializeTouchRegions();
-        void ProcessInput(std::vector<PlayerInputData>* playerActions);
+	private:
+		void InitializeTouchRegions();
+		void ProcessInput(std::vector<PlayerInputData>* playerActions);
 
-        // Cached pointer to device resources.
-        std::shared_ptr<DX::DeviceResources> m_deviceResources;
+		// Cached pointer to device resources.
+		std::shared_ptr<DX::DeviceResources> m_deviceResources;
 
-        // Note to developer: Replace these with your own content rendering.
-        std::unique_ptr<WRDSceneRenderer>           m_sceneRenderer;
-        std::shared_ptr<SampleDebugTextRenderer>         m_debugTextRenderer;
-        std::shared_ptr<SampleVirtualControllerRenderer> m_virtualControllerRenderer;
+		// Note to developer: Replace these with your own content rendering.
+		std::unique_ptr<WRDSceneRenderer>           m_sceneRenderer;
+		std::shared_ptr<SampleDebugTextRenderer>         m_debugTextRenderer;
+		std::shared_ptr<SampleVirtualControllerRenderer> m_virtualControllerRenderer;
 
-        // Input, sound, overlay managers
-        std::unique_ptr<InputManager>      m_inputManager;
-        std::unique_ptr<SoundPlayer>       m_soundPlayer;
-        std::shared_ptr<OverlayManager>    m_overlayManager;
+		// Input, sound, overlay managers
+		std::unique_ptr<InputManager>      m_inputManager;
+		std::unique_ptr<SoundPlayer>       m_soundPlayer;
+		std::shared_ptr<OverlayManager>    m_overlayManager;
 
-        // Rendering loop timer.
-        DX::StepTimer m_timer;
+		// Rendering loop timer.
+		DX::StepTimer m_timer;
 
-        // Tracks which players are connected (0...3).
-        unsigned int m_playersConnected;
+		// Tracks which players are connected (0...3).
+		unsigned int m_playersConnected;
 
-        // Tracks the touch region ID, allowing you to enable/disable touch regions.
-        // Note to developer: Expand this array if you add more touch regions, e.g. for a menu.
-        unsigned int m_touchRegionIDs[3];
-    };
+		// Tracks the touch region ID, allowing you to enable/disable touch regions.
+		// Note to developer: Expand this array if you add more touch regions, e.g. for a menu.
+		unsigned int m_touchRegionIDs[3];
+	};
 }

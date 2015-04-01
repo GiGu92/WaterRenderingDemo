@@ -190,6 +190,7 @@
     <Image Include="Assets\SplashScreen.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Content\WRDSceneRenderer.h" />
     <ClInclude Include="Helpers\InputManager.h" />
     <ClInclude Include="Helpers\OverlayManager.h" />
@@ -207,6 +208,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Content\WRDSceneRenderer.cpp" />
     <ClCompile Include="Helpers\InputManager.cpp" />
     <ClCompile Include="Helpers\OverlayManager.cpp" />

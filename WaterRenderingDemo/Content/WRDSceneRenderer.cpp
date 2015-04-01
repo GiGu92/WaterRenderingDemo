@@ -28,7 +28,15 @@ WRDSceneRenderer::WRDSceneRenderer(const std::shared_ptr<DX::DeviceResources>& d
 // Initializes view parameters when the window size changes.
 void WRDSceneRenderer::CreateWindowSizeDependentResources()
 {
-	Size outputSize = m_deviceResources->GetOutputSize();
+
+	// Camera
+	m_camera = std::unique_ptr<Camera>(new Camera(
+		XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),
+		m_deviceResources));
+
+	/*Size outputSize = m_deviceResources->GetOutputSize();
 	float aspectRatio = outputSize.Width / outputSize.Height;
 	float fovAngleY = 70.0f * XM_PI / 180.0f;
 
@@ -55,36 +63,43 @@ void WRDSceneRenderer::CreateWindowSizeDependentResources()
 
 	XMFLOAT4X4 orientation = m_deviceResources->GetOrientationTransform3D();
 
-	XMMATRIX orientationMatrix = XMLoadFloat4x4(&orientation);
+	XMMATRIX orientationMatrix = XMLoadFloat4x4(&orientation);*/
 
-	XMStoreFloat4x4(
-		&water->constantBufferData.projection,
-		XMMatrixTranspose(perspectiveMatrix * orientationMatrix)
-		);
+	XMStoreFloat4x4(&water->constantBufferData.projection, m_camera->getProjection());
+	XMStoreFloat4x4(&bottom->constantBufferData.projection, m_camera->getProjection());
 
-	XMStoreFloat4x4(
-		&bottom->constantBufferData.projection,
-		XMMatrixTranspose(perspectiveMatrix * orientationMatrix)
-		);
-
-	// Eye is at (0,0.7,1.5), looking at point (0,-0.1,0) with the up-vector along the y-axis.
+	/*// Eye is at (0,0.7,1.5), looking at point (0,-0.1,0) with the up-vector along the y-axis.
 	static const XMVECTORF32 eye = { 0.0f, 0.7f, 10.5f, 0.0f };
 	static const XMVECTORF32 at = { 0.0f, -0.1f, 0.0f, 0.0f };
-	static const XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };
+	static const XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };*/
 
 
-	XMStoreFloat4x4(&water->constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up)));
-	XMStoreFloat4x4(&bottom->constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up)));
+	XMStoreFloat4x4(&water->constantBufferData.view, m_camera->getView());
+	XMStoreFloat4x4(&bottom->constantBufferData.view, m_camera->getView());
+}
+
+void WRDSceneRenderer::ProcessInput(std::vector<PlayerInputData>* playerActions)
+{
+	m_camera->ProcessInput(playerActions);
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
 void WRDSceneRenderer::Update(DX::StepTimer const& timer)
 {
+	m_camera->Update(timer);
+
+	XMStoreFloat4x4(&water->constantBufferData.view, m_camera->getView());
+	XMStoreFloat4x4(&bottom->constantBufferData.view, m_camera->getView());
+
+	XMStoreFloat4x4(&water->constantBufferData.projection, m_camera->getProjection()	);
+	XMStoreFloat4x4(&bottom->constantBufferData.projection, m_camera->getProjection());
+
 	if (!m_tracking)
 	{
 		// Convert degrees to radians, then convert seconds to rotation angle
 		float radiansPerSecond = XMConvertToRadians(m_degreesPerSecond);
-		double totalRotation = timer.GetTotalSeconds() * radiansPerSecond;
+		//double totalRotation = timer.GetTotalSeconds() * radiansPerSecond;
+		double totalRotation = 0;
 		float radians = static_cast<float>(fmod(totalRotation, XM_2PI));
 
 		Rotate(radians);

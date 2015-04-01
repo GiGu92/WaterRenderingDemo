@@ -4,6 +4,7 @@
 #include "Content\ShaderStructures.h"
 #include "..\Helpers\StepTimer.h"
 #include "SceneObject.h"
+#include "Camera.h"
 
 namespace WaterRenderingDemo
 {
@@ -14,6 +15,7 @@ namespace WaterRenderingDemo
 		void CreateDeviceDependentResources();
 		void CreateWindowSizeDependentResources();
 		void ReleaseDeviceDependentResources();
+		void ProcessInput(std::vector<PlayerInputData>* playerActions);
 		void Update(DX::StepTimer const& timer);
 		void Render();
 		void StartTracking();
@@ -28,6 +30,9 @@ namespace WaterRenderingDemo
 	private:
 		// Cached pointer to device resources.
 		std::shared_ptr<DX::DeviceResources> m_deviceResources;
+
+		// Camera
+		std::unique_ptr<Camera> m_camera;
 
 		// Direct3D resources for water geometry.
 		std::shared_ptr<SceneObject> water;
