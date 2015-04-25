@@ -58,11 +58,12 @@ namespace DX
 		IWICImagingFactory2*	GetWicImagingFactory() const			{ return m_wicFactory.Get(); }
 		D2D1::Matrix3x2F		GetOrientationTransform2D() const		{ return m_orientationTransform2D; }
 
+		DXGI_MODE_ROTATION ComputeDisplayRotation();
+
 	private:
 		void CreateDeviceIndependentResources();
 		void CreateDeviceResources();
 		void CreateWindowSizeDependentResources();
-		DXGI_MODE_ROTATION ComputeDisplayRotation();
 
 		// Direct3D objects.
 		Microsoft::WRL::ComPtr<ID3D11Device2>			m_d3dDevice;

@@ -10,35 +10,35 @@ class Camera
 {
 public:
 	Camera();
-	Camera(XMVECTOR eye, XMVECTOR at, XMVECTOR up, std::shared_ptr<DX::DeviceResources> deviceResources);
+	Camera(XMFLOAT4 eye, XMFLOAT4 at, XMFLOAT4 up, std::shared_ptr<DX::DeviceResources> deviceResources);
 	
-	inline XMVECTOR getEye() { return eye; }
-	inline XMVECTOR getAt() { return at; }
-	inline XMVECTOR getUp() { return up; }
-	inline XMVECTOR getDirection() { return XMVector3Normalize(at - eye); }
-	inline XMVECTOR getMovementDir() { return movementDir; }
-	inline void setMovementDir(XMVECTOR value) { this->movementDir = value; }
+	inline XMVECTOR getEye() { return XMLoadFloat4(&eye); }
+	inline XMVECTOR getAt() { return XMLoadFloat4(&at); }
+	inline XMVECTOR getUp() { return XMLoadFloat4(&up); }
+	inline XMVECTOR getDirection() { return XMVector3Normalize(getAt() - getEye()); }
+	inline XMVECTOR getMovementDir() { return XMLoadFloat4(&movementDir); }
+	inline void setMovementDir(XMVECTOR value) { XMStoreFloat4(&this->movementDir, value); }
 	XMMATRIX getWorld();
 	XMMATRIX getView();
 	XMMATRIX getProjection();
 
 	void ProcessInput(std::vector<PlayerInputData>* playerActions);
 	void Update(DX::StepTimer const& timer);
-
+	
 	~Camera();
 
 private:
-	XMVECTOR eye;
-	XMVECTOR at;
-	XMVECTOR up;
+	XMFLOAT4 eye;
+	XMFLOAT4 at;
+	XMFLOAT4 up;
 	float fov;
 	float aspectRatio;
 	float nearClippingPane;
 	float farClippingPane;
 	
 	float movementSpeed;
-	XMVECTOR movementDir;
+	XMFLOAT4 movementDir;
 
-	XMMATRIX sceneOrientation;
+	XMFLOAT4X4 sceneOrientation;
 };
 

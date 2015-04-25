@@ -5,12 +5,12 @@ using namespace WaterRenderingDemo;
 
 Camera::Camera()
 {
-	this->eye = XMVectorSet( 0.0f, 0.7f, 10.5f, 0.0f );
-	this->at = XMVectorSet(0.0f, -0.1f, 0.0f, 0.0f);
-	this->up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	this->eye = XMFLOAT4( 0.0f, 0.7f, 10.5f, 0.0f );
+	this->at = XMFLOAT4(0.0f, -0.1f, 0.0f, 0.0f);
+	this->up = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
 };
 
-Camera::Camera(XMVECTOR eye, XMVECTOR at, XMVECTOR up,
+Camera::Camera(XMFLOAT4 eye, XMFLOAT4 at, XMFLOAT4 up,
 	std::shared_ptr<DX::DeviceResources> deviceResources)
 	: eye(eye), at(at), up(up)
 {
@@ -29,20 +29,20 @@ Camera::Camera(XMVECTOR eye, XMVECTOR at, XMVECTOR up,
 	this->farClippingPane = 100.0f;
 
 	XMFLOAT4X4 orientation = deviceResources->GetOrientationTransform3D();
-	this->sceneOrientation = XMLoadFloat4x4(&orientation);
+	this->sceneOrientation = orientation;
 
 	this->movementSpeed = 5.0f;
-	this->movementDir = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	this->movementDir = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 XMMATRIX Camera::getWorld()
 {
-	return XMMatrixTranspose(XMMatrixTranslationFromVector(eye));
+	return XMMatrixTranslationFromVector(getEye());
 }
 
 XMMATRIX Camera::getView()
 {
-	return XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up));
+	return XMMatrixLookAtRH(getEye(), getAt(), getUp());
 }
 
 XMMATRIX Camera::getProjection()
@@ -59,7 +59,9 @@ XMMATRIX Camera::getProjection()
 	// This post-multiplication step is required for any draw calls that are
 	// made to the swap chain render target. For draw calls to other targets,
 	// this transform should not be applied.
-	return XMMatrixTranspose(perspectiveMatrix * sceneOrientation);
+	return perspectiveMatrix * XMLoadFloat4x4(&sceneOrientation);
+	//return XMMatrixTranspose(XMMatrixMultiply(perspectiveMatrix, sceneOrientation));
+	//return perspectiveMatrix;
 }
 
 void Camera::ProcessInput(std::vector<PlayerInputData>* playerActions)
@@ -73,18 +75,18 @@ void Camera::ProcessInput(std::vector<PlayerInputData>* playerActions)
 		if (playerAction.PlayerAction == PLAYER_ACTION_TYPES::INPUT_MOVE)
 		{
 			XMVECTOR forward = this->getDirection();
-			XMVECTOR right = XMVector3Cross(forward, this->up);
+			XMVECTOR right = XMVector3Cross(forward, this->getUp());
 			md += playerAction.Y * forward + playerAction.X * right;
 		}
 
 		if (playerAction.PlayerAction == PLAYER_ACTION_TYPES::INPUT_JUMP_DOWN)
 		{
-			md += this->up;
+			md += this->getUp();
 		}
 
 		if (playerAction.PlayerAction == PLAYER_ACTION_TYPES::INPUT_DUCK_DOWN)
 		{
-			md += -this->up;
+			md += -this->getUp();
 		}
 
 		this->setMovementDir(md);
@@ -93,8 +95,11 @@ void Camera::ProcessInput(std::vector<PlayerInputData>* playerActions)
 
 void Camera::Update(DX::StepTimer const& timer)
 {
-	this->eye += this->movementDir * this->movementSpeed * timer.GetElapsedSeconds();
+	XMVECTOR newEye = getEye() += this->getMovementDir() * this->movementSpeed * timer.GetElapsedSeconds();
+	XMStoreFloat4(&this->eye, newEye);
 }
+
+
 
 Camera::~Camera()
 {

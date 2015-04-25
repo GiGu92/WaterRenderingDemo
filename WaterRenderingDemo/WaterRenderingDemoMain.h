@@ -13,6 +13,7 @@
 #include "Helpers\SoundPlayer.h"
 #include "Helpers\OverlayManager.h"
 #include "Content\WRDSceneRenderer.h"
+#include "DirectXTK3DSceneRenderer.h"
 #include "Content\Sample3DSceneRenderer.h"
 #include "Content\SampleDebugTextRenderer.h"
 #include "Content\SampleVirtualControllerRenderer.h"
@@ -41,7 +42,7 @@ namespace WaterRenderingDemo
 		std::shared_ptr<DX::DeviceResources> m_deviceResources;
 
 		// Note to developer: Replace these with your own content rendering.
-		std::unique_ptr<WRDSceneRenderer>           m_sceneRenderer;
+		std::unique_ptr<DirectXTK3DSceneRenderer>                m_sceneRenderer;
 		std::shared_ptr<SampleDebugTextRenderer>         m_debugTextRenderer;
 		std::shared_ptr<SampleVirtualControllerRenderer> m_virtualControllerRenderer;
 

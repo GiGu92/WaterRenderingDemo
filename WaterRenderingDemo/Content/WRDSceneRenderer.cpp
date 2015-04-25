@@ -15,8 +15,8 @@ WRDSceneRenderer::WRDSceneRenderer(const std::shared_ptr<DX::DeviceResources>& d
 	m_tracking(false),
 	m_deviceResources(deviceResources)
 {
-	this->water = std::shared_ptr<SceneObject>(new SceneObject());
-	//this->water = std::shared_ptr<SceneObject>(new SceneObject(m_deviceResources, L"L200-FBX.cmo"));
+	//this->water = std::shared_ptr<SceneObject>(new SceneObject());
+	this->water = std::shared_ptr<SceneObject>(new SceneObject(m_deviceResources, L"plane.cmo"));
 	this->bottom = std::shared_ptr<SceneObject>(new SceneObject());
 	this->water->indexCount = 0;
 	this->bottom->indexCount = 0;
@@ -28,51 +28,18 @@ WRDSceneRenderer::WRDSceneRenderer(const std::shared_ptr<DX::DeviceResources>& d
 // Initializes view parameters when the window size changes.
 void WRDSceneRenderer::CreateWindowSizeDependentResources()
 {
-
 	// Camera
 	m_camera = std::unique_ptr<Camera>(new Camera(
-		XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f),
+		XMVectorSet(2.0f, 1.0f, -5.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),
 		m_deviceResources));
 
-	/*Size outputSize = m_deviceResources->GetOutputSize();
-	float aspectRatio = outputSize.Width / outputSize.Height;
-	float fovAngleY = 70.0f * XM_PI / 180.0f;
-
-	// This is a simple example of change that can be made when the app is in
-	// portrait or snapped view.
-	if (aspectRatio < 1.0f)
-	{
-		fovAngleY *= 2.0f;
-	}
-
-	// Note that the OrientationTransform3D matrix is post-multiplied here
-	// in order to correctly orient the scene to match the display orientation.
-	// This post-multiplication step is required for any draw calls that are
-	// made to the swap chain render target. For draw calls to other targets,
-	// this transform should not be applied.
-
-	// This sample makes use of a right-handed coordinate system using row-major matrices.
-	XMMATRIX perspectiveMatrix = XMMatrixPerspectiveFovRH(
-		fovAngleY,
-		aspectRatio,
-		0.01f,
-		100.0f
-		);
-
-	XMFLOAT4X4 orientation = m_deviceResources->GetOrientationTransform3D();
-
-	XMMATRIX orientationMatrix = XMLoadFloat4x4(&orientation);*/
+	XMStoreFloat4x4(&water->constantBufferData.model, XMMatrixTranspose(XMMatrixScaling(100,100,100)));
+	XMStoreFloat4x4(&bottom->constantBufferData.model, XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 0.0f)));
 
 	XMStoreFloat4x4(&water->constantBufferData.projection, m_camera->getProjection());
 	XMStoreFloat4x4(&bottom->constantBufferData.projection, m_camera->getProjection());
-
-	/*// Eye is at (0,0.7,1.5), looking at point (0,-0.1,0) with the up-vector along the y-axis.
-	static const XMVECTORF32 eye = { 0.0f, 0.7f, 10.5f, 0.0f };
-	static const XMVECTORF32 at = { 0.0f, -0.1f, 0.0f, 0.0f };
-	static const XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };*/
-
 
 	XMStoreFloat4x4(&water->constantBufferData.view, m_camera->getView());
 	XMStoreFloat4x4(&bottom->constantBufferData.view, m_camera->getView());
@@ -153,7 +120,7 @@ void WRDSceneRenderer::Render()
 	context->OMSetRenderTargets(1, targets, m_deviceResources->GetDepthStencilView());
 
 	// Prepare the constant buffers to send it to the graphics device.
-	context->UpdateSubresource(
+	/*context->UpdateSubresource(
 		water->constantBuffer.Get(),
 		0,
 		NULL,
@@ -168,12 +135,12 @@ void WRDSceneRenderer::Render()
 		&bottom->constantBufferData,
 		0,
 		0
-		);
+		);*/
 
-	water->Draw(context);
+	//water->Draw(context);
 	//bottom->Draw(context);
 
-	//water->Draw(m_deviceResources);
+	water->Draw(m_deviceResources);
 }
 
 void WRDSceneRenderer::CreateDeviceDependentResources()
@@ -202,11 +169,11 @@ void WRDSceneRenderer::CreateDeviceDependentResources()
 	});
 
 	auto loadWaterMeshTask = (createWaterVSTask && createWaterPSTask).then([this]() {
-		water->LoadMesh(m_deviceResources, L"");
+		water->LoadCubeMesh(m_deviceResources, L"");
 	});
 
 	auto loadBottomMeshTask = (createBottomVSTask && createBottomPSTask).then([this]() {
-		bottom->LoadMesh(m_deviceResources, L"");
+		bottom->LoadCubeMesh(m_deviceResources, L"");
 	});
 
 	(loadWaterMeshTask && loadBottomMeshTask).then([this]() {

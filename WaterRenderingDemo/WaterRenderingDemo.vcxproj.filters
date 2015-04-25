@@ -97,21 +97,21 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="WaterRenderingDemoMain.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="Content\WRDSceneRenderer.cpp">
-      <Filter>Content</Filter>
-    </ClCompile>
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DirectXTK3DSceneRenderer.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="WaterRenderingDemoMain.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Content\WRDSceneRenderer.h">
-      <Filter>Content</Filter>
-    </ClInclude>
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="DirectXTK3DSceneRenderer.h">
+      <Filter>Content</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
@@ -132,8 +132,10 @@
     <MeshContentTask Include="Assets\plane.fbx">
       <Filter>Assets</Filter>
     </MeshContentTask>
-    <MeshContentTask Include="Assets\L200-FBX\L200-FBX.fbx">
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\seafloor.dds">
       <Filter>Assets</Filter>
-    </MeshContentTask>
+    </Image>
   </ItemGroup>
 </Project>

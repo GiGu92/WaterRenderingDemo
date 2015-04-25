@@ -140,6 +140,9 @@
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <FxCompile>
+      <ShaderModel>4.0_level_9_1</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
@@ -185,13 +188,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Image Include="Assets\Logo.png" />
+    <Image Include="Assets\seafloor.dds" />
     <Image Include="Assets\SmallLogo.png" />
     <Image Include="Assets\StoreLogo.png" />
     <Image Include="Assets\SplashScreen.png" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Content\WRDSceneRenderer.h" />
+    <ClInclude Include="DirectXTK3DSceneRenderer.h" />
     <ClInclude Include="Helpers\InputManager.h" />
     <ClInclude Include="Helpers\OverlayManager.h" />
     <ClInclude Include="Helpers\SoundPlayer.h" />
@@ -209,7 +213,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Content\WRDSceneRenderer.cpp" />
+    <ClCompile Include="DirectXTK3DSceneRenderer.cpp" />
     <ClCompile Include="Helpers\InputManager.cpp" />
     <ClCompile Include="Helpers\OverlayManager.cpp" />
     <ClCompile Include="Helpers\SoundPlayer.cpp" />
@@ -267,7 +271,6 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <MeshContentTask Include="Assets\L200-FBX\L200-FBX.fbx" />
     <MeshContentTask Include="Assets\plane.fbx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

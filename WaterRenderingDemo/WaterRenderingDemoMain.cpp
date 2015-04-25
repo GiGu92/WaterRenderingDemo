@@ -12,7 +12,7 @@
 using namespace WaterRenderingDemo;
 using namespace Windows::Foundation;
 using namespace Windows::System::Threading;
-using namespace Concurrency;
+//using namespace Concurrency;
 
 // Loads and initializes application assets when the application is loaded.
 WaterRenderingDemoMain::WaterRenderingDemoMain(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
@@ -22,7 +22,7 @@ WaterRenderingDemoMain::WaterRenderingDemoMain(const std::shared_ptr<DX::DeviceR
 	m_deviceResources->RegisterDeviceNotify(this);
 
 	// Note to developer: Replace this with your app's content initialization.
-	m_sceneRenderer     = std::unique_ptr<WRDSceneRenderer>(new WRDSceneRenderer(m_deviceResources));
+	m_sceneRenderer = std::unique_ptr<DirectXTK3DSceneRenderer>(new DirectXTK3DSceneRenderer(m_deviceResources));
 	m_debugTextRenderer = std::shared_ptr<SampleDebugTextRenderer>(new SampleDebugTextRenderer(m_deviceResources));
 
 	// Note to developer: Use these to get input data, play audio, and draw HUDs and menus.

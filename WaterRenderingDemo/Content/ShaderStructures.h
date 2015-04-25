@@ -6,6 +6,7 @@
 //// Copyright (c) Microsoft Corporation. All rights reserved
 
 #pragma once
+#include "VertexTypes.h"
 
 namespace WaterRenderingDemo
 {
@@ -21,9 +22,9 @@ namespace WaterRenderingDemo
     static_assert((sizeof(ModelViewProjectionConstantBuffer) % 16) == 0, "Constant Buffer size must be 16-byte aligned");
 
     // Used to send per-vertex data to the vertex shader.
-    struct VertexPositionColor
+    /*struct VertexPositionColor
     {
         DirectX::XMFLOAT3 pos;
         DirectX::XMFLOAT3 color;
-    };
+    };*/
 }
