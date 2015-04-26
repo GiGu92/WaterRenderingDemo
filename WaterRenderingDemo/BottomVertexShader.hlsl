@@ -39,9 +39,9 @@ PixelShaderInput main(VertexShaderInput input)
 	PixelShaderInput output;
 	float4 pos = float4(input.pos, 1.0f);
 
-	// Transform the vertex position into projected space.
-	float4x4 worldviewproj = mul(mul(projection, view), model);
-	output.pos = mul(worldviewproj, pos);
+		// Transform the vertex position into projected space.
+		float4x4 worldviewproj = mul(mul(projection, view), model);
+		output.pos = mul(worldviewproj, pos);
 
 	// Pass the color through without modification.
 	output.texCoord = input.texCoord;

@@ -62,10 +62,7 @@ namespace WaterRenderingDemo
 		Microsoft::WRL::ComPtr<ID3D11InputLayout>                               m_batchInputLayout;
 
 		std::shared_ptr<SceneObject> m_water;
-
-		DirectX::XMFLOAT4X4 m_world;
-		DirectX::XMFLOAT4X4 m_view;
-		DirectX::XMFLOAT4X4 m_projection;
+		std::shared_ptr<SceneObject> m_bottom;
 
 		std::unique_ptr<Camera> camera;
 

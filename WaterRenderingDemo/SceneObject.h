@@ -16,7 +16,7 @@ class SceneObject
 
 public:
 	SceneObject();
-	SceneObject(std::shared_ptr<DX::DeviceResources> deviceResources, const wchar_t* modelFile);
+	SceneObject(std::shared_ptr<DX::DeviceResources> deviceResources, const wchar_t* modelFile, bool alpha = false);
 	
 	void Draw(std::shared_ptr<DX::DeviceResources> deviceResources);
 	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext2> context);
@@ -40,10 +40,6 @@ public:
 	~SceneObject();
 
 //private:
-	//XMFLOAT4X4 world;
-	//XMFLOAT4X4 view;
-	//XMFLOAT4X4 projection;
-
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>   vertexShader;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>    pixelShader;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>         vsConstantBuffer;
@@ -54,5 +50,6 @@ public:
 	std::shared_ptr<CommonStates>                states;
 
 	std::unique_ptr<DirectX::Model> model;
+	bool alpha;
 };
 

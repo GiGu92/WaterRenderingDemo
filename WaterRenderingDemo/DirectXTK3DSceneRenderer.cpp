@@ -28,7 +28,8 @@ using namespace Windows::Foundation;
 DirectXTK3DSceneRenderer::DirectXTK3DSceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
 m_deviceResources(deviceResources)
 {
-	m_water = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"plane.cmo"));
+	m_water = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"plane.cmo", false));
+	m_bottom = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"plane.cmo"));
 
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
@@ -37,70 +38,31 @@ m_deviceResources(deviceResources)
 // Initializes view parameters when the window size changes.
 void DirectXTK3DSceneRenderer::CreateWindowSizeDependentResources()
 {
-	Size outputSize = m_deviceResources->GetOutputSize();
-	float aspectRatio = outputSize.Width / outputSize.Height;
-	float fovAngleY = 70.0f * XM_PI / 180.0f;
-
-	// This is a simple example of change that can be made when the app is in
-	// portrait or snapped view.
-	if (aspectRatio < 1.0f)
-	{
-		fovAngleY *= 2.0f;
-	}
-
 	camera = std::unique_ptr<Camera>(new Camera(
 		XMFLOAT4(0.0f, 7.f, 15.f, 0.0f),
 		XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
 		XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f),
 		m_deviceResources));
 
-	// Note that the OrientationTransform3D matrix is post-multiplied here
-	// in order to correctly orient the scene to match the display orientation.
-	// This post-multiplication step is required for any draw calls that are
-	// made to the swap chain render target. For draw calls to other targets,
-	// this transform should not be applied.
-
-	// This sample makes use of a right-handed coordinate system using row-major matrices.
-	/*XMMATRIX perspectiveMatrix = XMMatrixPerspectiveFovRH(
-		fovAngleY,
-		aspectRatio,
-		0.01f,
-		100.0f
-		);
-
-	XMFLOAT4X4 orientation = m_deviceResources->GetOrientationTransform3D();
-
-	XMMATRIX orientationMatrix = XMLoadFloat4x4(&orientation);
-
-	XMMATRIX projection = XMMatrixMultiply(perspectiveMatrix, orientationMatrix);*/
-
 	m_batchEffect->SetProjection(camera->getProjection());
 
 	XMStoreFloat4x4(&m_water->vsConstantBufferData.projection, camera->getProjection());
-	//m_water->projection = projection;
-	/*XMStoreFloat4x4(
-		&m_water->constantBufferData.projection,
-		projection
-		);*/
+	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.projection, camera->getProjection());
+
 }
 
 void DirectXTK3DSceneRenderer::Update(DX::StepTimer const& timer)
 {
-	/*XMVECTOR eye = XMVectorSet(0.0f, 7.f, 15.f, 0.0f);
-	XMVECTOR at = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	XMMATRIX view = XMMatrixLookAtRH(eye, at, up);*/
-	//XMMATRIX world = XMMatrixRotationY(float(timer.GetTotalSeconds() * XM_PIDIV4));
-	XMMATRIX world = /*XMMatrixRotationAxis(XMVectorSet(0,0,-1,0), XM_PIDIV2)*//* * XMMatrixScaling(100.f, 100.f, 100.f)*/XMMatrixIdentity();
-
 	camera->Update(timer);
 
 	m_batchEffect->SetView(camera->getView());
 	m_batchEffect->SetWorld(XMMatrixIdentity());
 
 	XMStoreFloat4x4(&m_water->vsConstantBufferData.view, camera->getView());
-	XMStoreFloat4x4(&m_water->vsConstantBufferData.model, world);
+	XMStoreFloat4x4(&m_water->vsConstantBufferData.model, XMMatrixTranslation(0.f, 1.f, 0.f));
+
+	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.view, camera->getView());
+	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.model, XMMatrixTranslation(0.f, -1.f, 0.f));
 }
 
 void XM_CALLCONV DirectXTK3DSceneRenderer::DrawGrid(FXMVECTOR xAxis, FXMVECTOR yAxis, FXMVECTOR origin, size_t xdivs, size_t ydivs, GXMVECTOR color)
@@ -161,12 +123,8 @@ void DirectXTK3DSceneRenderer::Render()
 	const XMVECTORF32 yaxis = { 0.f, 0.f, 20.f };
 	DrawGrid(xaxis, yaxis, g_XMZero, 20, 20, Colors::Gray);
 
-	// Draw 3D object
-	//XMMATRIX world = XMLoadFloat4x4(&m_world);
-	//XMMATRIX view = XMLoadFloat4x4(&m_view);
-	//XMMATRIX projection = XMLoadFloat4x4(&m_projection);
-
 	m_water->Draw(m_deviceResources);
+	m_bottom->Draw(m_deviceResources);
 
 	/*XMVECTOR qid = XMQuaternionIdentity();
 	const XMVECTORF32 scale = { 1.f, 1.f, 1.f };
@@ -211,8 +169,6 @@ void DirectXTK3DSceneRenderer::CreateDeviceDependentResources()
 			);
 	}
 
-	m_model = Model::CreateFromCMO(device, L"plane.cmo", *m_fxFactory, false);
-
 	// Load textures
 	DX::ThrowIfFailed(
 		CreateDDSTextureFromFile(device, L"assets\\seafloor.dds", nullptr, m_texture1.ReleaseAndGetAddressOf())
@@ -222,7 +178,6 @@ void DirectXTK3DSceneRenderer::CreateDeviceDependentResources()
 	//	CreateDDSTextureFromFile(device, L"assets\\windowslogo.dds", nullptr, m_texture2.ReleaseAndGetAddressOf())
 	//	);
 
-	// Load shaders
 	// Load shaders asynchronously.
 	auto loadWaterVSTask = DX::ReadDataAsync(L"WaterVertexShader.cso");
 	auto loadWaterPSTask = DX::ReadDataAsync(L"WaterPixelShader.cso");
@@ -235,7 +190,19 @@ void DirectXTK3DSceneRenderer::CreateDeviceDependentResources()
 		m_water->LoadPS(m_deviceResources, fileData);
 	});
 
-	(createWaterVSTask && createWaterPSTask).then([this]() {
+	auto loadBottomVSTask = DX::ReadDataAsync(L"BottomVertexShader.cso");
+	auto loadBottomPSTask = DX::ReadDataAsync(L"BottomPixelShader.cso");
+
+	auto createBottomVSTask = loadBottomVSTask.then([this](const std::vector<byte>& fileData) {
+		m_bottom->LoadVS(m_deviceResources, fileData);
+	});
+
+	auto createBottomPSTask = loadBottomPSTask.then([this](const std::vector<byte>& fileData) {
+		m_bottom->LoadPS(m_deviceResources, fileData);
+	});
+
+	(createWaterVSTask && createWaterPSTask &&
+		createBottomVSTask && createBottomPSTask).then([this]() {
 		m_loadingComplete = true;
 	});
 }

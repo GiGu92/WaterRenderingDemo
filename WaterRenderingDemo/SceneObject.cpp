@@ -10,13 +10,10 @@ using namespace Windows::Foundation;
 
 SceneObject::SceneObject() { }
 
-SceneObject::SceneObject(std::shared_ptr<DX::DeviceResources> deviceResources, const wchar_t* modelFile)
+SceneObject::SceneObject(std::shared_ptr<DX::DeviceResources> deviceResources, const wchar_t* modelFile, bool alpha)
 {
-	auto device = deviceResources->GetD3DDevice();
-	EffectFactory fx(device);
-	this->model = Model::CreateFromCMO(device, modelFile, fx, false);
-
-	//XMStoreFloat4x4(&this->world, XMMatrixIdentity());
+	this->LoadMesh(deviceResources, modelFile);
+	this->alpha = alpha;
 }
 
 SceneObject::~SceneObject()
@@ -129,58 +126,6 @@ void SceneObject::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 	
 }
 
-/*void SceneObject::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext2> context)
-{
-	// Each vertex is one instance of the VertexPositionColor struct.
-	UINT stride = sizeof(VertexPositionColor);
-	UINT offset = 0;
-	context->IASetVertexBuffers(
-		0,
-		1,
-		vertexBuffer.GetAddressOf(),
-		&stride,
-		&offset
-		);
-
-	context->IASetIndexBuffer(
-		indexBuffer.Get(),
-		DXGI_FORMAT_R16_UINT, // Each index is one 16-bit unsigned integer (short).
-		0
-		);
-
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	context->IASetInputLayout(inputLayout.Get());
-
-	// Attach our vertex shader.
-	context->VSSetShader(
-		vertexShader.Get(),
-		nullptr,
-		0
-		);
-
-	// Send the constant buffer to the graphics device.
-	context->VSSetConstantBuffers(
-		0,
-		1,
-		constantBuffer.GetAddressOf()
-		);
-
-	// Attach our pixel shader.
-	context->PSSetShader(
-		pixelShader.Get(),
-		nullptr,
-		0
-		);
-
-	// Draw the objects.
-	context->DrawIndexed(
-		indexCount,
-		0,
-		0
-		);
-}*/
-
 void SceneObject::LoadVS(
 	std::shared_ptr<DX::DeviceResources> deviceResources,
 	const std::vector<byte>& vsFileData)
@@ -212,20 +157,6 @@ void SceneObject::LoadVS(
 		&inputLayout
 		)
 		);
-}
-
-void SceneObject::LoadPS(
-	std::shared_ptr<DX::DeviceResources> deviceResources,
-	const std::vector<byte>& psFileData)
-{
-	DX::ThrowIfFailed(
-		deviceResources->GetD3DDevice()->CreatePixelShader(
-		&psFileData[0],
-		psFileData.size(),
-		nullptr,
-		&pixelShader
-		)
-		);
 
 	CD3D11_BUFFER_DESC vsConstantBufferDesc(sizeof(ModelViewProjectionConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	DX::ThrowIfFailed(
@@ -236,22 +167,46 @@ void SceneObject::LoadPS(
 		)
 		);
 
+}
+
+void SceneObject::LoadPS(
+	std::shared_ptr<DX::DeviceResources> deviceResources,
+	const std::vector<byte>& psFileData)
+{
+	auto device = deviceResources->GetD3DDevice();
+	auto context = deviceResources->GetD3DDeviceContext();
+
+	DX::ThrowIfFailed(
+		device->CreatePixelShader(
+		&psFileData[0],
+		psFileData.size(),
+		nullptr,
+		&pixelShader
+		)
+		);
+
 	CD3D11_BUFFER_DESC psConstantBufferDesc(sizeof(ModelViewProjectionConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	DX::ThrowIfFailed(
-		deviceResources->GetD3DDevice()->CreateBuffer(
+		device->CreateBuffer(
 		&psConstantBufferDesc,
 		nullptr,
 		&psConstantBuffer
 		)
 		);
 
-	auto device = deviceResources->GetD3DDevice();
-	auto context = deviceResources->GetD3DDeviceContext();
-
 	this->states = std::shared_ptr<CommonStates>(new CommonStates(device));
-	context->RSSetState(states->CullNone());
-	context->OMSetBlendState(states->AlphaBlend(), nullptr, 0xFFFFFFFF);
-	context->OMSetDepthStencilState(states->DepthRead(), 0);
+	context->RSSetState(states->CullCounterClockwise());
+
+	if (alpha)
+	{
+		context->OMSetBlendState(states->AlphaBlend(), nullptr, 0xFFFFFFFF);
+		context->OMSetDepthStencilState(states->DepthRead(), 0);
+	}
+	else
+	{
+		context->OMSetBlendState(states->Opaque(), nullptr, 0xFFFFFFFF);
+		context->OMSetDepthStencilState(states->DepthDefault(), 0);
+	}
 	
 }
 
