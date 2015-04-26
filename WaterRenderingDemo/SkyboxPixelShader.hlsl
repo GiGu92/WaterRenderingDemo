@@ -5,6 +5,20 @@
 ////
 //// Copyright (c) Microsoft Corporation. All rights reserved
 
+TextureCube skyMap : register(t[0]);
+
+SamplerState samLinear : register(s[0]);
+
+samplerCUBE SkyBoxSampler = sampler_state
+{
+	texture = <skyMap>;
+	magfilter = LINEAR;
+	minfilter = LINEAR;
+	mipfilter = LINEAR;
+	AddressU = Mirror;
+	AddressV = Mirror;
+};
+
 // A constant buffer.
 cbuffer ModelViewProjectionConstantBuffer : register(b1)
 {
@@ -17,15 +31,12 @@ cbuffer ModelViewProjectionConstantBuffer : register(b1)
 struct PixelShaderInput
 {
 	float4 pos : SV_Position;
-	float3 normal : NORMAL;
-	//float4 tangent : TANGENT0;
-	//float color : COLOR0;
-	float2 texCoord : TEXCOORD;
+	float3 texCoord : TEXCOORD;
 };
 
 // A pass-through function for the (interpolated) color data.
 float4 main(PixelShaderInput input) : SV_TARGET
 {
-	//return float4(input.texCoord, 1.0f, 1.0f);
-	return float4(0.0f, 0.0f, 1.0f, 0.5f);
+	//return float4(input.normal, 1.0f);
+	return skyMap.Sample(samLinear, normalize(input.texCoord));
 }

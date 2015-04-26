@@ -57,12 +57,13 @@ namespace WaterRenderingDemo
 		std::unique_ptr<DirectX::Model>                                         m_model;
 		std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionColor>>  m_batch;
 
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>                        m_texture1;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>                        m_skyTexture;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>                        m_texture2;
 		Microsoft::WRL::ComPtr<ID3D11InputLayout>                               m_batchInputLayout;
 
 		std::shared_ptr<SceneObject> m_water;
 		std::shared_ptr<SceneObject> m_bottom;
+		std::shared_ptr<SceneObject> m_skybox;
 
 		std::unique_ptr<Camera> camera;
 

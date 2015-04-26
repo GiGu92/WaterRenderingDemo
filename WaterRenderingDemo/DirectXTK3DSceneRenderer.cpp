@@ -28,8 +28,9 @@ using namespace Windows::Foundation;
 DirectXTK3DSceneRenderer::DirectXTK3DSceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
 m_deviceResources(deviceResources)
 {
-	m_water = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"plane.cmo", false));
+	m_water = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"plane.cmo"));
 	m_bottom = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"plane.cmo"));
+	m_skybox = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"sphere.cmo", L"assets//skybox.dds"));
 
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
@@ -48,6 +49,7 @@ void DirectXTK3DSceneRenderer::CreateWindowSizeDependentResources()
 
 	XMStoreFloat4x4(&m_water->vsConstantBufferData.projection, camera->getProjection());
 	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.projection, camera->getProjection());
+	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.projection, camera->getProjection());
 
 }
 
@@ -63,6 +65,11 @@ void DirectXTK3DSceneRenderer::Update(DX::StepTimer const& timer)
 
 	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.view, camera->getView());
 	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.model, XMMatrixTranslation(0.f, -1.f, 0.f));
+	
+	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.view, camera->getView());
+	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.model, XMMatrixScaling(500.f, 500.f, 500.f) * XMMatrixTranslationFromVector(camera->getEye()));
+
+	XMStoreFloat4(&m_skybox->vsConstantBufferData.cameraPos, camera->getEye());
 }
 
 void XM_CALLCONV DirectXTK3DSceneRenderer::DrawGrid(FXMVECTOR xAxis, FXMVECTOR yAxis, FXMVECTOR origin, size_t xdivs, size_t ydivs, GXMVECTOR color)
@@ -118,13 +125,23 @@ void DirectXTK3DSceneRenderer::Render()
 	ID3D11RenderTargetView *const targets[1] = { m_deviceResources->GetBackBufferRenderTargetView() };
 	context->OMSetRenderTargets(1, targets, m_deviceResources->GetDepthStencilView());
 
+	context->RSSetState(m_states->CullClockwise());
+	context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+	context->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+	m_skybox->Draw(m_deviceResources);
+
+	context->RSSetState(m_states->CullCounterClockwise());
+
 	// Draw procedurally generated dynamic grid
 	const XMVECTORF32 xaxis = { 20.f, 0.f, 0.f };
 	const XMVECTORF32 yaxis = { 0.f, 0.f, 20.f };
 	DrawGrid(xaxis, yaxis, g_XMZero, 20, 20, Colors::Gray);
 
-	m_water->Draw(m_deviceResources);
 	m_bottom->Draw(m_deviceResources);
+	
+	context->OMSetBlendState(m_states->AlphaBlend(), nullptr, 0xFFFFFFFF);
+	context->OMSetDepthStencilState(m_states->DepthRead(), 0);
+	m_water->Draw(m_deviceResources);
 
 	/*XMVECTOR qid = XMQuaternionIdentity();
 	const XMVECTORF32 scale = { 1.f, 1.f, 1.f };
@@ -169,15 +186,6 @@ void DirectXTK3DSceneRenderer::CreateDeviceDependentResources()
 			);
 	}
 
-	// Load textures
-	DX::ThrowIfFailed(
-		CreateDDSTextureFromFile(device, L"assets\\seafloor.dds", nullptr, m_texture1.ReleaseAndGetAddressOf())
-		);
-
-	//DX::ThrowIfFailed(
-	//	CreateDDSTextureFromFile(device, L"assets\\windowslogo.dds", nullptr, m_texture2.ReleaseAndGetAddressOf())
-	//	);
-
 	// Load shaders asynchronously.
 	auto loadWaterVSTask = DX::ReadDataAsync(L"WaterVertexShader.cso");
 	auto loadWaterPSTask = DX::ReadDataAsync(L"WaterPixelShader.cso");
@@ -201,8 +209,21 @@ void DirectXTK3DSceneRenderer::CreateDeviceDependentResources()
 		m_bottom->LoadPS(m_deviceResources, fileData);
 	});
 
+	auto loadSkyboxVSTask = DX::ReadDataAsync(L"SkyboxVertexShader.cso");
+	auto loadSkyboxPSTask = DX::ReadDataAsync(L"SkyboxPixelShader.cso");
+
+	auto createSkyboxVSTask = loadSkyboxVSTask.then([this](const std::vector<byte>& fileData) {
+		m_skybox->LoadVS(m_deviceResources, fileData);
+	});
+
+	auto createSkyboxPSTask = loadSkyboxPSTask.then([this](const std::vector<byte>& fileData) {
+		m_skybox->LoadPS(m_deviceResources, fileData);
+	});
+
 	(createWaterVSTask && createWaterPSTask &&
-		createBottomVSTask && createBottomPSTask).then([this]() {
+		createBottomVSTask && createBottomPSTask &&
+		createSkyboxVSTask && createSkyboxPSTask).then([this]()
+	{
 		m_loadingComplete = true;
 	});
 }
@@ -214,7 +235,7 @@ void DirectXTK3DSceneRenderer::ReleaseDeviceDependentResources()
 	m_batch.reset();
 	m_batchEffect.reset();
 	m_model.reset();
-	m_texture1.Reset();
+	m_skyTexture.Reset();
 	m_texture2.Reset();
 	m_batchInputLayout.Reset();
 }

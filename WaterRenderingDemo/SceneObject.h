@@ -16,7 +16,7 @@ class SceneObject
 
 public:
 	SceneObject();
-	SceneObject(std::shared_ptr<DX::DeviceResources> deviceResources, const wchar_t* modelFile, bool alpha = false);
+	SceneObject(std::shared_ptr<DX::DeviceResources> deviceResources, const wchar_t* modelFile, const wchar_t* diffuseTextureFile = nullptr);
 	
 	void Draw(std::shared_ptr<DX::DeviceResources> deviceResources);
 	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext2> context);
@@ -27,12 +27,6 @@ public:
 	void LoadPS(
 		std::shared_ptr<DX::DeviceResources> deviceResources,
 		const std::vector<byte>& psFileData);
-	void LoadCubeMesh(
-		std::shared_ptr<DX::DeviceResources> deviceResources,
-		const wchar_t* modelFile);
-	void LoadPlaneMesh(
-		std::shared_ptr<DX::DeviceResources> deviceResources,
-		const wchar_t* modelFile);
 	void LoadMesh(
 		std::shared_ptr<DX::DeviceResources> deviceResources,
 		const wchar_t* modelFile);
@@ -40,16 +34,18 @@ public:
 	~SceneObject();
 
 //private:
-	Microsoft::WRL::ComPtr<ID3D11VertexShader>   vertexShader;
-	Microsoft::WRL::ComPtr<ID3D11PixelShader>    pixelShader;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>         vsConstantBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>         psConstantBuffer;
-	ModelViewProjectionConstantBuffer            vsConstantBufferData;
-	ModelViewProjectionConstantBuffer            psConstantBufferData;
-	Microsoft::WRL::ComPtr<ID3D11InputLayout>    inputLayout;
-	std::shared_ptr<CommonStates>                states;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader>         vertexShader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader>          pixelShader;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>               vsConstantBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>               psConstantBuffer;
+	ModelViewProjectionConstantBuffer                  vsConstantBufferData;
+	ModelViewProjectionConstantBuffer                  psConstantBufferData;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout>          inputLayout;
+	std::shared_ptr<CommonStates>                      states;
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   diffuseTexture;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState>         linearSampler;
 
 	std::unique_ptr<DirectX::Model> model;
-	bool alpha;
 };
 

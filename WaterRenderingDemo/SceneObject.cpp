@@ -3,6 +3,8 @@
 
 #include "..\Helpers\DirectXHelper.h"
 
+#include "DDSTextureLoader.h"
+
 using namespace WaterRenderingDemo;
 
 using namespace DirectX;
@@ -10,10 +12,34 @@ using namespace Windows::Foundation;
 
 SceneObject::SceneObject() { }
 
-SceneObject::SceneObject(std::shared_ptr<DX::DeviceResources> deviceResources, const wchar_t* modelFile, bool alpha)
+SceneObject::SceneObject(std::shared_ptr<DX::DeviceResources> deviceResources, 
+	const wchar_t* modelFile, const wchar_t* diffuseTextureFile)
 {
+	auto device = deviceResources->GetD3DDevice();
+
+	// Load mesh
 	this->LoadMesh(deviceResources, modelFile);
-	this->alpha = alpha;
+
+	// Load textures
+	if (diffuseTextureFile != nullptr)
+	{
+		DX::ThrowIfFailed(
+			CreateDDSTextureFromFile(device, diffuseTextureFile, nullptr, diffuseTexture.ReleaseAndGetAddressOf())
+			);
+	}
+
+	// Create samplers
+	D3D11_SAMPLER_DESC sampDesc;
+	ZeroMemory(&sampDesc, sizeof(sampDesc));
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	device->CreateSamplerState(&sampDesc, &linearSampler);
+
 }
 
 SceneObject::~SceneObject()
@@ -78,14 +104,8 @@ void SceneObject::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 
 			context->IASetPrimitiveTopology(part->primitiveType);
 
-			//device->CreateInputLayout(
-			//	VertexPositionNormalTexture::InputElements,
-			//	VertexPositionNormalTexture::InputElementCount,
-			//	vsByteCode, vsByteCodeLength,
-			//	&inputLayout);
-
-			context->IASetInputLayout(inputLayout.Get());
-			//context->IASetInputLayout(part->inputLayout.Get());
+			//context->IASetInputLayout(inputLayout.Get());
+			context->IASetInputLayout(part->inputLayout.Get());
 
 			// Attach our vertex shader.
 			context->VSSetShader(
@@ -114,6 +134,9 @@ void SceneObject::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 				1,
 				psConstantBuffer.GetAddressOf()
 				);
+
+			context->PSSetShaderResources(0, 1, diffuseTexture.GetAddressOf());
+			context->PSSetSamplers(0, 1, linearSampler.GetAddressOf());
 
 			// Draw the objects.
 			context->DrawIndexed(
@@ -148,10 +171,12 @@ void SceneObject::LoadVS(
 
 	DX::ThrowIfFailed(
 		deviceResources->GetD3DDevice()->CreateInputLayout(
-		vertexDesc,
-		ARRAYSIZE(vertexDesc),
+		//vertexDesc,
+		//ARRAYSIZE(vertexDesc),
 		//VertexPositionNormalTexture::InputElements,
 		//VertexPositionNormalTexture::InputElementCount,
+		VertexPositionNormalTangentColorTexture::InputElements,
+		VertexPositionNormalTangentColorTexture::InputElementCount,
 		&vsFileData[0],
 		vsFileData.size(),
 		&inputLayout
@@ -192,22 +217,7 @@ void SceneObject::LoadPS(
 		nullptr,
 		&psConstantBuffer
 		)
-		);
-
-	this->states = std::shared_ptr<CommonStates>(new CommonStates(device));
-	context->RSSetState(states->CullCounterClockwise());
-
-	if (alpha)
-	{
-		context->OMSetBlendState(states->AlphaBlend(), nullptr, 0xFFFFFFFF);
-		context->OMSetDepthStencilState(states->DepthRead(), 0);
-	}
-	else
-	{
-		context->OMSetBlendState(states->Opaque(), nullptr, 0xFFFFFFFF);
-		context->OMSetDepthStencilState(states->DepthDefault(), 0);
-	}
-	
+		);	
 }
 
 void SceneObject::LoadMesh(

@@ -26,7 +26,7 @@ Camera::Camera(XMFLOAT4 eye, XMFLOAT4 at, XMFLOAT4 up,
 	}
 
 	this->nearClippingPane = 0.01f;
-	this->farClippingPane = 100.0f;
+	this->farClippingPane = 1000.0f;
 
 	XMFLOAT4X4 orientation = deviceResources->GetOrientationTransform3D();
 	this->sceneOrientation = orientation;
