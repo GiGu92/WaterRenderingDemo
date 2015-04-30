@@ -305,6 +305,8 @@
   </ItemGroup>
   <ItemGroup>
     <MeshContentTask Include="Assets\plane.fbx" />
+    <MeshContentTask Include="Assets\plane2.fbx" />
+    <MeshContentTask Include="Assets\soccer.fbx" />
     <MeshContentTask Include="Assets\sphere.fbx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -29,7 +29,7 @@ DirectXTK3DSceneRenderer::DirectXTK3DSceneRenderer(const std::shared_ptr<DX::Dev
 m_deviceResources(deviceResources)
 {
 	m_water = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"plane.cmo"));
-	m_bottom = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"plane.cmo"));
+	m_bottom = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"soccer.cmo"));
 	m_skybox = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"sphere.cmo", L"assets//skybox.dds"));
 
 	CreateDeviceDependentResources();
@@ -68,8 +68,6 @@ void DirectXTK3DSceneRenderer::Update(DX::StepTimer const& timer)
 	
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.view, camera->getView());
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.model, XMMatrixScaling(500.f, 500.f, 500.f) * XMMatrixTranslationFromVector(camera->getEye()));
-
-	XMStoreFloat4(&m_skybox->vsConstantBufferData.cameraPos, camera->getEye());
 }
 
 void XM_CALLCONV DirectXTK3DSceneRenderer::DrawGrid(FXMVECTOR xAxis, FXMVECTOR yAxis, FXMVECTOR origin, size_t xdivs, size_t ydivs, GXMVECTOR color)

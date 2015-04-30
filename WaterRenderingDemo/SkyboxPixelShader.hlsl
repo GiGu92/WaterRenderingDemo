@@ -9,16 +9,6 @@ TextureCube skyMap : register(t[0]);
 
 SamplerState samLinear : register(s[0]);
 
-samplerCUBE SkyBoxSampler = sampler_state
-{
-	texture = <skyMap>;
-	magfilter = LINEAR;
-	minfilter = LINEAR;
-	mipfilter = LINEAR;
-	AddressU = Mirror;
-	AddressV = Mirror;
-};
-
 // A constant buffer.
 cbuffer ModelViewProjectionConstantBuffer : register(b1)
 {

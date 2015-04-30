@@ -11,7 +11,6 @@ cbuffer ModelViewProjectionConstantBuffer : register(b0)
 	matrix model;
 	matrix view;
 	matrix projection;
-	float4 cameraPos;
 };
 
 // Per-vertex data used as input to the vertex shader.
@@ -37,7 +36,7 @@ PixelShaderInput main(VertexShaderInput input)
 	output.pos = mul(worldviewproj, pos);
 
 	float4 worldPos = mul(model, pos);
-		output.texCoord = input.pos;//worldPos.xyz - cameraPos.xyz;
+		output.texCoord = input.pos;
 
 	return output;
 }

@@ -80,11 +80,11 @@ void SceneObject::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 	XMVECTOR rotate = XMQuaternionRotationRollPitchYaw(0, 0, 0);
 	XMMATRIX worldMatrix = XMLoadFloat4x4(&this->vsConstantBufferData.model);
 	XMMATRIX local = XMMatrixMultiply(worldMatrix, XMMatrixTransformation(g_XMZero, qid, scale, g_XMZero, rotate, translate));
-	//this->model->Draw(context, states, local, XMLoadFloat4x4(&constantBufferData.view), XMLoadFloat4x4(&constantBufferData.projection), false);
+	//this->model->Draw(context, states, local, XMLoadFloat4x4(&vsConstantBufferData.view), XMLoadFloat4x4(&vsConstantBufferData.projection), false);
 
 	XMStoreFloat4x4(&this->vsConstantBufferData.model, local);
 
-	for each (auto& mesh in model->meshes)
+	for each(auto& mesh in model->meshes)
 	{
 		for each (auto& part in mesh->meshParts)
 		{
@@ -169,10 +169,21 @@ void SceneObject::LoadVS(
 		{ "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,    0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
+	const D3D11_INPUT_ELEMENT_DESC vertexDesc2[] =
+	{
+		{ "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+
 	DX::ThrowIfFailed(
 		deviceResources->GetD3DDevice()->CreateInputLayout(
 		//vertexDesc,
 		//ARRAYSIZE(vertexDesc),
+		//vertexDesc2,
+		//ARRAYSIZE(vertexDesc2),
 		//VertexPositionNormalTexture::InputElements,
 		//VertexPositionNormalTexture::InputElementCount,
 		VertexPositionNormalTangentColorTexture::InputElements,
@@ -226,5 +237,5 @@ void SceneObject::LoadMesh(
 {
 	auto device = deviceResources->GetD3DDevice();
 	EffectFactory fx(device);
-	this->model = Model::CreateFromCMO(device, modelFile, fx, false);
+	this->model = Model::CreateFromCMO(device, modelFile, fx, true);
 }
