@@ -325,6 +325,26 @@ void InputManager::AddTransitoryStatesToEventMap(void)
 						action = INPUT_JUMP_RELEASED;
 					}
 					break;
+				case INPUT_DUCK_DOWN:
+					if (m_actionsThisFrame[idVal][actionVal])
+					{
+						action = INPUT_DUCK_PRESSED;
+					}
+					else
+					{
+						action = INPUT_DUCK_RELEASED;
+					}
+					break;
+				case INPUT_MOVE:
+					if (m_actionsThisFrame[idVal][actionVal])
+					{
+						action = INPUT_MOVE_PRESSED;
+					}
+					else
+					{
+						action = INPUT_MOVE_RELEASED;
+					}
+					break;
 
 				default:
 					break;

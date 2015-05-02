@@ -44,6 +44,8 @@ namespace WaterRenderingDemo
 		INPUT_NONE = 0,
 		INPUT_COORDINATES_ONLY = 1, // raw coord data
 		INPUT_MOVE,
+		INPUT_MOVE_PRESSED,
+		INPUT_MOVE_RELEASED,
 		INPUT_AIM,
 		INPUT_FIRE,
 		INPUT_FIRE_UP,

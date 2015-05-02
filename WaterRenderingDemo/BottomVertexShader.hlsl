@@ -18,9 +18,7 @@ struct VertexShaderInput
 {
 	float3 pos : SV_Position;
 	float3 normal : NORMAL;
-	float4 tangent : TANGENT;
-	float4 color : COLOR;
-	float2 texCoord : TEXCOORD0;
+	float2 texCoord : TEXCOORD;
 };
 
 // Per-pixel color data passed through the pixel shader.
@@ -28,8 +26,6 @@ struct PixelShaderInput
 {
 	float4 pos : SV_Position;
 	float3 normal : NORMAL;
-	//float4 tangent : TANGENT0;
-	//float color : COLOR0;
 	float2 texCoord : TEXCOORD;
 };
 
@@ -44,8 +40,8 @@ PixelShaderInput main(VertexShaderInput input)
 		output.pos = mul(worldviewproj, pos);
 
 	// Pass the color through without modification.
-	output.texCoord = input.texCoord;
 	output.normal = input.normal;
+	output.texCoord = input.texCoord;
 
 	return output;
 }

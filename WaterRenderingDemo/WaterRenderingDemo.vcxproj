@@ -189,10 +189,15 @@
   <ItemGroup>
     <Image Include="Assets\Logo.png" />
     <Image Include="Assets\seafloor.dds" />
+    <Image Include="Assets\seafloor2.dds" />
+    <Image Include="Assets\seafloor3.dds" />
     <Image Include="Assets\skybox.dds" />
     <Image Include="Assets\SmallLogo.png" />
     <Image Include="Assets\StoreLogo.png" />
     <Image Include="Assets\SplashScreen.png" />
+    <Image Include="Assets\water_normal.dds" />
+    <Image Include="Assets\water_normal2.dds" />
+    <Image Include="Assets\water_normal3.dds" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -202,6 +207,7 @@
     <ClInclude Include="Helpers\SoundPlayer.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="Helpers\DeviceResources.h" />
+    <ClInclude Include="Plane.h" />
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="WaterRenderingDemoMain.h" />
     <ClInclude Include="Helpers\DirectXHelper.h" />
@@ -220,6 +226,7 @@
     <ClCompile Include="Helpers\SoundPlayer.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Helpers\DeviceResources.cpp" />
+    <ClCompile Include="Plane.cpp" />
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="WaterRenderingDemoMain.cpp" />
     <ClCompile Include="Content\Sample3DSceneRenderer.cpp" />
@@ -305,8 +312,6 @@
   </ItemGroup>
   <ItemGroup>
     <MeshContentTask Include="Assets\plane.fbx" />
-    <MeshContentTask Include="Assets\plane2.fbx" />
-    <MeshContentTask Include="Assets\soccer.fbx" />
     <MeshContentTask Include="Assets\sphere.fbx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

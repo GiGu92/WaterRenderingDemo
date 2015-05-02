@@ -102,6 +102,7 @@
     <ClCompile Include="DirectXTK3DSceneRenderer.cpp">
       <Filter>Content</Filter>
     </ClCompile>
+    <ClCompile Include="Plane.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
@@ -112,6 +113,7 @@
     <ClInclude Include="DirectXTK3DSceneRenderer.h">
       <Filter>Content</Filter>
     </ClInclude>
+    <ClInclude Include="Plane.h" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
@@ -147,18 +149,27 @@
     <MeshContentTask Include="Assets\sphere.fbx">
       <Filter>Assets</Filter>
     </MeshContentTask>
-    <MeshContentTask Include="Assets\plane2.fbx">
-      <Filter>Assets</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="Assets\soccer.fbx">
-      <Filter>Assets</Filter>
-    </MeshContentTask>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\skybox.dds">
+      <Filter>Assets</Filter>
+    </Image>
     <Image Include="Assets\seafloor.dds">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Assets\skybox.dds">
+    <Image Include="Assets\water_normal.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\water_normal2.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\water_normal3.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\seafloor2.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\seafloor3.dds">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>

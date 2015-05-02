@@ -13,18 +13,36 @@ using namespace Windows::Foundation;
 SceneObject::SceneObject() { }
 
 SceneObject::SceneObject(std::shared_ptr<DX::DeviceResources> deviceResources, 
-	const wchar_t* modelFile, const wchar_t* diffuseTextureFile)
+	const wchar_t* modelFile, 
+	const wchar_t* diffuseTextureFile,
+	const wchar_t* environmentTextureFile,
+	const wchar_t* normalTextureFile)
 {
 	auto device = deviceResources->GetD3DDevice();
 
 	// Load mesh
-	this->LoadMesh(deviceResources, modelFile);
+	if (modelFile != nullptr)
+	{
+		this->LoadMesh(deviceResources, modelFile);
+	}
 
 	// Load textures
 	if (diffuseTextureFile != nullptr)
 	{
 		DX::ThrowIfFailed(
 			CreateDDSTextureFromFile(device, diffuseTextureFile, nullptr, diffuseTexture.ReleaseAndGetAddressOf())
+			);
+	}
+	if (environmentTextureFile != nullptr)
+	{
+		DX::ThrowIfFailed(
+			CreateDDSTextureFromFile(device, environmentTextureFile, nullptr, environmentTexture.ReleaseAndGetAddressOf())
+			);
+	}
+	if (normalTextureFile != nullptr)
+	{
+		DX::ThrowIfFailed(
+			CreateDDSTextureFromFile(device, normalTextureFile, nullptr, normalTexture.ReleaseAndGetAddressOf())
 			);
 	}
 
@@ -104,8 +122,8 @@ void SceneObject::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 
 			context->IASetPrimitiveTopology(part->primitiveType);
 
-			//context->IASetInputLayout(inputLayout.Get());
-			context->IASetInputLayout(part->inputLayout.Get());
+			context->IASetInputLayout(inputLayout.Get());
+			//context->IASetInputLayout(part->inputLayout.Get());
 
 			// Attach our vertex shader.
 			context->VSSetShader(
@@ -164,37 +182,28 @@ void SceneObject::LoadVS(
 
 	static const D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 	{
-		{ "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL",      0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,    0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-
-	const D3D11_INPUT_ELEMENT_DESC vertexDesc2[] =
-	{
-		{ "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL",      0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT",     0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR",       0, DXGI_FORMAT_R8G8B8A8_UNORM,     0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
 	DX::ThrowIfFailed(
 		deviceResources->GetD3DDevice()->CreateInputLayout(
-		//vertexDesc,
-		//ARRAYSIZE(vertexDesc),
-		//vertexDesc2,
-		//ARRAYSIZE(vertexDesc2),
+		vertexDesc,
+		ARRAYSIZE(vertexDesc),
 		//VertexPositionNormalTexture::InputElements,
 		//VertexPositionNormalTexture::InputElementCount,
-		VertexPositionNormalTangentColorTexture::InputElements,
-		VertexPositionNormalTangentColorTexture::InputElementCount,
+		//VertexPositionNormalTangentColorTexture::InputElements,
+		//VertexPositionNormalTangentColorTexture::InputElementCount,
 		&vsFileData[0],
 		vsFileData.size(),
 		&inputLayout
 		)
 		);
 
-	CD3D11_BUFFER_DESC vsConstantBufferDesc(sizeof(ModelViewProjectionConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
+	CD3D11_BUFFER_DESC vsConstantBufferDesc(sizeof(MyConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	DX::ThrowIfFailed(
 		deviceResources->GetD3DDevice()->CreateBuffer(
 		&vsConstantBufferDesc,
@@ -202,7 +211,6 @@ void SceneObject::LoadVS(
 		&vsConstantBuffer
 		)
 		);
-
 }
 
 void SceneObject::LoadPS(
@@ -221,7 +229,7 @@ void SceneObject::LoadPS(
 		)
 		);
 
-	CD3D11_BUFFER_DESC psConstantBufferDesc(sizeof(ModelViewProjectionConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
+	CD3D11_BUFFER_DESC psConstantBufferDesc(sizeof(MyConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	DX::ThrowIfFailed(
 		device->CreateBuffer(
 		&psConstantBufferDesc,

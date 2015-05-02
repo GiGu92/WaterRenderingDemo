@@ -10,21 +10,34 @@
 
 namespace WaterRenderingDemo
 {
-    // Constant buffer used to send MVP matrices to the vertex shader.
-    struct ModelViewProjectionConstantBuffer
-    {
-        DirectX::XMFLOAT4X4 model;
-        DirectX::XMFLOAT4X4 view;
-        DirectX::XMFLOAT4X4 projection;
-    };
+	// Constant buffer used to send MVP matrices to the vertex shader.
+	struct ModelViewProjectionConstantBuffer
+	{
+		DirectX::XMFLOAT4X4 model;
+		DirectX::XMFLOAT4X4 view;
+		DirectX::XMFLOAT4X4 projection;
+	};
 
-    // Assert that the constant buffer remains 16-byte aligned.
-    static_assert((sizeof(ModelViewProjectionConstantBuffer) % 16) == 0, "Constant Buffer size must be 16-byte aligned");
+	struct MyConstantBuffer
+	{
+		DirectX::XMFLOAT4X4 model;
+		DirectX::XMFLOAT4X4 view;
+		DirectX::XMFLOAT4X4 projection;
+		DirectX::XMFLOAT4 cameraPos;
+		DirectX::XMFLOAT4 lightPos;
+		DirectX::XMFLOAT4 lightColor;
+		DirectX::XMFLOAT4 totalTime;
 
-    // Used to send per-vertex data to the vertex shader.
-    /*struct VertexPositionColor
-    {
-        DirectX::XMFLOAT3 pos;
-        DirectX::XMFLOAT3 color;
-    };*/
+	};
+
+	// Assert that the constant buffer remains 16-byte aligned.
+	static_assert((sizeof(ModelViewProjectionConstantBuffer) % 16) == 0, "Constant Buffer size must be 16-byte aligned");
+	static_assert((sizeof(MyConstantBuffer) % 16) == 0, "Constant Buffer size must be 16-byte aligned");
+
+	// Used to send per-vertex data to the vertex shader.
+	/*struct VertexPositionColor
+	{
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 color;
+	};*/
 }

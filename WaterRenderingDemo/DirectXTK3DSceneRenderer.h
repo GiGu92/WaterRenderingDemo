@@ -29,6 +29,7 @@
 #include "VertexTypes.h"
 
 #include "SceneObject.h"
+#include "Plane.h"
 #include "Camera.h"
 
 namespace WaterRenderingDemo
@@ -58,16 +59,17 @@ namespace WaterRenderingDemo
 		std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionColor>>  m_batch;
 
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>                        m_skyTexture;
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>                        m_texture2;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>                        m_seaFloorTexture;
 		Microsoft::WRL::ComPtr<ID3D11InputLayout>                               m_batchInputLayout;
 
-		std::shared_ptr<SceneObject> m_water;
-		std::shared_ptr<SceneObject> m_bottom;
+		std::shared_ptr<Plane> m_water;
+		std::shared_ptr<Plane> m_bottom;
 		std::shared_ptr<SceneObject> m_skybox;
 
 		std::unique_ptr<Camera> camera;
 
 		bool m_loadingComplete = false;
+		bool m_wireframe = false;
 	};
 }
 

@@ -28,8 +28,10 @@ using namespace Windows::Foundation;
 DirectXTK3DSceneRenderer::DirectXTK3DSceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
 m_deviceResources(deviceResources)
 {
-	m_water = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"plane.cmo"));
-	m_bottom = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"soccer.cmo"));
+	//m_water = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"plane.cmo"));
+	//m_bottom = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"soccer.cmo"));
+	m_water = std::shared_ptr<Plane>(new Plane(deviceResources, 500, 500, 0.1f, nullptr, L"assets//skybox.dds", L"assets//water_normal3.dds"));
+	m_bottom = std::shared_ptr<Plane>(new Plane(deviceResources, 1, 1, 50.f, L"assets/seafloor3.dds"));
 	m_skybox = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"sphere.cmo", L"assets//skybox.dds"));
 
 	CreateDeviceDependentResources();
@@ -51,6 +53,9 @@ void DirectXTK3DSceneRenderer::CreateWindowSizeDependentResources()
 	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.projection, camera->getProjection());
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.projection, camera->getProjection());
 
+	m_water->vsConstantBufferData.lightPos = XMFLOAT4(0.f, 100.f, 0.f, 1.f);
+	m_water->vsConstantBufferData.lightColor = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+
 }
 
 void DirectXTK3DSceneRenderer::Update(DX::StepTimer const& timer)
@@ -61,10 +66,12 @@ void DirectXTK3DSceneRenderer::Update(DX::StepTimer const& timer)
 	m_batchEffect->SetWorld(XMMatrixIdentity());
 
 	XMStoreFloat4x4(&m_water->vsConstantBufferData.view, camera->getView());
-	XMStoreFloat4x4(&m_water->vsConstantBufferData.model, XMMatrixTranslation(0.f, 1.f, 0.f));
+	XMStoreFloat4x4(&m_water->vsConstantBufferData.model, XMMatrixScaling(10.f, 10.f, 10.f) * XMMatrixTranslation(0.f, 1.f, 0.f));
+	XMStoreFloat4(&m_water->vsConstantBufferData.cameraPos, camera->getEye());
+	m_water->vsConstantBufferData.totalTime = XMFLOAT4(timer.GetTotalSeconds(), 0, 0, 0);
 
 	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.view, camera->getView());
-	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.model, XMMatrixTranslation(0.f, -1.f, 0.f));
+	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.model, XMMatrixScaling(10.f, 10.f, 10.f) * XMMatrixTranslation(0.f, -1.f, 0.f));
 	
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.view, camera->getView());
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.model, XMMatrixScaling(500.f, 500.f, 500.f) * XMMatrixTranslationFromVector(camera->getEye()));
@@ -135,8 +142,11 @@ void DirectXTK3DSceneRenderer::Render()
 	const XMVECTORF32 yaxis = { 0.f, 0.f, 20.f };
 	DrawGrid(xaxis, yaxis, g_XMZero, 20, 20, Colors::Gray);
 
+	if (m_wireframe)
+		context->RSSetState(m_states->Wireframe());
+
 	m_bottom->Draw(m_deviceResources);
-	
+
 	context->OMSetBlendState(m_states->AlphaBlend(), nullptr, 0xFFFFFFFF);
 	context->OMSetDepthStencilState(m_states->DepthRead(), 0);
 	m_water->Draw(m_deviceResources);
@@ -195,7 +205,7 @@ void DirectXTK3DSceneRenderer::CreateDeviceDependentResources()
 	auto createWaterPSTask = loadWaterPSTask.then([this](const std::vector<byte>& fileData) {
 		m_water->LoadPS(m_deviceResources, fileData);
 	});
-
+	
 	auto loadBottomVSTask = DX::ReadDataAsync(L"BottomVertexShader.cso");
 	auto loadBottomPSTask = DX::ReadDataAsync(L"BottomPixelShader.cso");
 
@@ -234,6 +244,6 @@ void DirectXTK3DSceneRenderer::ReleaseDeviceDependentResources()
 	m_batchEffect.reset();
 	m_model.reset();
 	m_skyTexture.Reset();
-	m_texture2.Reset();
+	m_seaFloorTexture.Reset();
 	m_batchInputLayout.Reset();
 }

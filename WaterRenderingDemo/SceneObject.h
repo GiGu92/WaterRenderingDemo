@@ -16,18 +16,21 @@ class SceneObject
 
 public:
 	SceneObject();
-	SceneObject(std::shared_ptr<DX::DeviceResources> deviceResources, const wchar_t* modelFile, const wchar_t* diffuseTextureFile = nullptr);
+	SceneObject(std::shared_ptr<DX::DeviceResources> deviceResources, 
+		const wchar_t* modelFile, 
+		const wchar_t* diffuseTextureFile = nullptr,
+		const wchar_t* environmentTextureFile = nullptr,
+		const wchar_t* normalTextureFile = nullptr);
 	
-	void Draw(std::shared_ptr<DX::DeviceResources> deviceResources);
-	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext2> context);
+	virtual void Draw(std::shared_ptr<DX::DeviceResources> deviceResources);
 
-	void LoadVS(
+	virtual void LoadVS(
 		std::shared_ptr<DX::DeviceResources> deviceResources,
 		const std::vector<byte>& vsFileData);
-	void LoadPS(
+	virtual void LoadPS(
 		std::shared_ptr<DX::DeviceResources> deviceResources,
 		const std::vector<byte>& psFileData);
-	void LoadMesh(
+	virtual void LoadMesh(
 		std::shared_ptr<DX::DeviceResources> deviceResources,
 		const wchar_t* modelFile);
 	
@@ -38,12 +41,14 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>          pixelShader;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>               vsConstantBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>               psConstantBuffer;
-	ModelViewProjectionConstantBuffer                  vsConstantBufferData;
-	ModelViewProjectionConstantBuffer                  psConstantBufferData;
+	MyConstantBuffer                                   vsConstantBufferData;
+	MyConstantBuffer                                   psConstantBufferData;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout>          inputLayout;
 	std::shared_ptr<CommonStates>                      states;
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   diffuseTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   environmentTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   normalTexture;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>         linearSampler;
 
 	std::unique_ptr<DirectX::Model> model;
