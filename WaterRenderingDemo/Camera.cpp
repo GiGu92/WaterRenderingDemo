@@ -31,7 +31,7 @@ Camera::Camera(XMFLOAT4 eye, XMFLOAT4 at, XMFLOAT4 up,
 	XMFLOAT4X4 orientation = deviceResources->GetOrientationTransform3D();
 	this->sceneOrientation = orientation;
 
-	this->movementSpeed = 5.0f;
+	this->movementSpeed = 10.0f;
 	this->movementDir = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 

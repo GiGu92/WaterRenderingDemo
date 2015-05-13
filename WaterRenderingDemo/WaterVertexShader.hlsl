@@ -47,7 +47,7 @@ PixelShaderInput main(VertexShaderInput input)
 	// Calculate waves
 	float4 SpaceFreq = float4(3.5f, 0.0f, 3.5f, 0.0f);
 	float4 TimeFreq = float4(1.4f, 0.0f, 1.4f, 0.0f);
-	float4 Amplitudes = float4(0.04f, 0.0f, 0.08f, 0.0f);
+	float4 Amplitudes = float4(0.08f, 0.0f, 0.16f, 0.0f);
 	float4 WaveDirX = float4(-0.5f, 0.0f, 0.1f, 0.0f);
 	float4 WaveDirZ = float4(0.7f, 0.0f, 0.5f, 0.0f);
 	float Time = totalTime.x;
@@ -79,14 +79,14 @@ PixelShaderInput main(VertexShaderInput input)
 	output.posWS = posWS.xyz;
 
 	// Calculate tangent basis
-	float3 tangentWS = mul(model, tangentOS);
-	float3 binormalWS = mul(model, binormalOS);
-	float3x3 WorldToTangent = float3x3(tangentWS, binormalWS, normalWS);
+	float3 tangentWS = normalize(mul(model, tangentOS));
+	float3 binormalWS = normalize(mul(model, binormalOS));
+	float3x3 WorldToTangent = transpose(float3x3(tangentWS, binormalWS, normalWS));
 	
 	// Calculate tangent space view and light vectors
-	float3 lightWS = lightPos.xyz - posWS;
-	output.lightTS = mul(WorldToTangent, lightWS);
-	float3 viewWS = cameraPos - posWS;
+	float3 lightWS = normalize(lightPos.xyz - posWS.xyz);
+	output.lightTS = mul(WorldToTangent, lightWS).yxz;
+	float3 viewWS = normalize(cameraPos.xyz - posWS.xyz);
 	output.viewTS = mul(WorldToTangent, viewWS);
 
 	return output;

@@ -28,5 +28,5 @@ struct PixelShaderInput
 // A pass-through function for the (interpolated) color data.
 float4 main(PixelShaderInput input) : SV_TARGET
 {
-	return diffuseMap.Sample(samLinear, input.texCoord * 20.0f);
+	return diffuseMap.Sample(samLinear, input.texCoord * 20.0f) / 2.f;
 }

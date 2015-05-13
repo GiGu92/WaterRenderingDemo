@@ -198,6 +198,8 @@
     <Image Include="Assets\water_normal.dds" />
     <Image Include="Assets\water_normal2.dds" />
     <Image Include="Assets\water_normal3.dds" />
+    <Image Include="Assets\water_normal4.dds" />
+    <Image Include="Assets\water_normal5.dds" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />

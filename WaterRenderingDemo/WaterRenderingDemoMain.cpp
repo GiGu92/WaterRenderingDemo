@@ -251,7 +251,7 @@ bool WaterRenderingDemoMain::Render()
 	// Render the scene objects.
 	// Note to developer: Replace this with your app's content rendering functions.
 	m_sceneRenderer->Render();
-	m_overlayManager->Render();
+	//m_overlayManager->Render();
 
 	return true;
 }

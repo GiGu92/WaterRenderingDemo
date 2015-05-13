@@ -73,14 +73,17 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	float4 lightingColor = ComputeIllumination(input.texCoord, normalize(input.lightTS), normalize(input.viewTS), input.normalWS);
 
 	float3 viewDir = normalize(input.posWS - cameraPos);
-	float3 normalTS = normalize(normalMap.Sample(samLinear, input.texCoord * 10) * 2.0 - 1.0);
-	float3 reflectionWS = reflect(viewDir, normalTS);
+	float3 normalTS = input.normalWS + normalize(normalMap.Sample(samLinear, input.texCoord * 20) * 2.0 - 1.0).rbg;
+	//normalTS.y = -normalTS.y;
+	float3 reflectionWS = reflect(viewDir, normalize(normalTS));
 	//float3 reflectionWS = reflect(viewDir, input.normalWS);
 	float4 reflectionColor = environmentMap.Sample(samLinear, reflectionWS);
 
 	float4 color = /*lightingColor * */reflectionColor;
 	//float4 color = lightingColor/* * reflectionColor*/;
-	color.a = 0.5f;
+	//float4 color = float4(normalTS, 1);
+	//color.a = 0.5f;
+	color = color / 2.f;
 
 	return color;
 }

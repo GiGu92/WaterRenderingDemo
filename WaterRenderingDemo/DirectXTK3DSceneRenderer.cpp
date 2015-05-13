@@ -31,7 +31,7 @@ m_deviceResources(deviceResources)
 	//m_water = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"plane.cmo"));
 	//m_bottom = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"soccer.cmo"));
 	m_water = std::shared_ptr<Plane>(new Plane(deviceResources, 500, 500, 0.1f, nullptr, L"assets//skybox.dds", L"assets//water_normal3.dds"));
-	m_bottom = std::shared_ptr<Plane>(new Plane(deviceResources, 1, 1, 50.f, L"assets/seafloor3.dds"));
+	m_bottom = std::shared_ptr<Plane>(new Plane(deviceResources, 1, 1, 50.f, L"assets/seafloor.dds"));
 	m_skybox = std::shared_ptr<SceneObject>(new SceneObject(deviceResources, L"sphere.cmo", L"assets//skybox.dds"));
 
 	CreateDeviceDependentResources();
@@ -53,7 +53,7 @@ void DirectXTK3DSceneRenderer::CreateWindowSizeDependentResources()
 	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.projection, camera->getProjection());
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.projection, camera->getProjection());
 
-	m_water->vsConstantBufferData.lightPos = XMFLOAT4(0.f, 100.f, 0.f, 1.f);
+	m_water->vsConstantBufferData.lightPos = XMFLOAT4(1000.f, 500.f, 0.f, 1.f);
 	m_water->vsConstantBufferData.lightColor = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 
 }
@@ -71,7 +71,7 @@ void DirectXTK3DSceneRenderer::Update(DX::StepTimer const& timer)
 	m_water->vsConstantBufferData.totalTime = XMFLOAT4(timer.GetTotalSeconds(), 0, 0, 0);
 
 	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.view, camera->getView());
-	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.model, XMMatrixScaling(10.f, 10.f, 10.f) * XMMatrixTranslation(0.f, -1.f, 0.f));
+	XMStoreFloat4x4(&m_bottom->vsConstantBufferData.model, XMMatrixScaling(10.f, 10.f, 10.f) * XMMatrixTranslation(0.f, -5.f, 0.f));
 	
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.view, camera->getView());
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.model, XMMatrixScaling(500.f, 500.f, 500.f) * XMMatrixTranslationFromVector(camera->getEye()));
@@ -140,7 +140,7 @@ void DirectXTK3DSceneRenderer::Render()
 	// Draw procedurally generated dynamic grid
 	const XMVECTORF32 xaxis = { 20.f, 0.f, 0.f };
 	const XMVECTORF32 yaxis = { 0.f, 0.f, 20.f };
-	DrawGrid(xaxis, yaxis, g_XMZero, 20, 20, Colors::Gray);
+	//DrawGrid(xaxis, yaxis, g_XMZero, 20, 20, Colors::Gray);
 
 	if (m_wireframe)
 		context->RSSetState(m_states->Wireframe());

@@ -172,5 +172,11 @@
     <Image Include="Assets\seafloor3.dds">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Assets\water_normal4.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\water_normal5.dds">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
 </Project>
